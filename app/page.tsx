@@ -1,0 +1,138 @@
+'use client';
+
+import { useState, useMemo, useEffect } from 'react';
+import { SummaryMetrics } from '@/components/dashboard/summary-metrics';
+import { Filters, FilterState } from '@/components/dashboard/filters';
+import { Charts } from '@/components/dashboard/charts';
+import { TradeHistory } from '@/components/dashboard/trade-history';
+import { StatsAndInsights } from '@/components/dashboard/stats-and-insights';
+import { ExportImport } from '@/components/dashboard/export-import';
+import { OpenPositions } from '@/components/dashboard/open-positions';
+import { MOCK_TRADES, MOCK_SYMBOLS } from '@/lib/mock-trades';
+import { Trade } from '@/lib/types';
+import { useDeriverseData } from '@/hooks/useDeriverseData';
+
+export default function Dashboard() {
+  const { activePositions, marketPrices, isConnected } = useDeriverseData();
+  const [filters, setFilters] = useState<FilterState>({});
+  const [trades, setTrades] = useState<Trade[]>(MOCK_TRADES);
+
+  // Merge/Replace logic
+  // If connected, we ideally prioritize on-chain data for Open Positions
+  // For Trade History (closed trades), we might still rely on mock data until we have an indexer
+  // For now, we'll append activePositions to the trades list if they aren't already there
+
+  // Apply filters
+  const filteredTrades = useMemo(() => {
+    let result = trades;
+
+    if (filters.symbol) {
+      result = result.filter((t) => t.symbol === filters.symbol);
+    }
+
+    if (filters.dateRange && filters.dateRange !== 'all') {
+      const now = Date.now();
+      const periods: Record<string, number> = {
+        '1d': 24 * 60 * 60 * 1000,
+        '7d': 7 * 24 * 60 * 60 * 1000,
+        '30d': 30 * 24 * 60 * 60 * 1000,
+        '90d': 90 * 24 * 60 * 60 * 1000,
+      };
+
+      const periodMs = periods[filters.dateRange];
+      if (periodMs) {
+        result = result.filter((t) => t.entryTime >= now - periodMs);
+      }
+    }
+
+    return result;
+  }, [trades, filters]);
+
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  const handleNotesUpdate = (tradeId: string, notes: string) => {
+    setTrades((prevTrades) =>
+      prevTrades.map((trade) => (trade.id === tradeId ? { ...trade, notes } : trade))
+    );
+  };
+
+  // Separate open and closed trades for different sections
+  // Use real active positions if connected, otherwise fallback to mock for demo
+  const openTrades = isConnected && activePositions.length > 0 ? activePositions : filteredTrades.filter(t => t.status === 'open');
+  const closedTrades = filteredTrades.filter(t => t.status !== 'open');
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-white">
+      {/* Header */}
+      <header className="border-b border-[#1F1F1F] bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-10">
+        <div className="max-w-full mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+                Trading Dashboard
+              </h1>
+              <p className="text-xs text-neutral-500 mt-1">
+                Deriverse Protocol Analytics
+              </p>
+            </div>
+            <div className="hidden md:block text-right">
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-emerald-400 neon-text-green">
+                    ${closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2)}
+                  </div>
+                  <p className="text-xs text-neutral-400">Realized P&L</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-full mx-auto px-6 py-6">
+        <div className="space-y-6">
+          {/* Top Section: Filters and Open Positions */}
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-1 space-y-6">
+              <Filters
+                symbols={MOCK_SYMBOLS}
+                onFilterChange={handleFilterChange}
+                selectedSymbol={filters.symbol}
+                selectedDateRange={filters.dateRange}
+              />
+              <ExportImport trades={filteredTrades} />
+            </div>
+
+            <div className="xl:col-span-3">
+              <OpenPositions trades={openTrades} />
+            </div>
+          </div>
+
+          {/* Key Metrics */}
+          <SummaryMetrics trades={closedTrades} />
+
+          {/* Charts Section */}
+          <Charts trades={closedTrades} />
+
+          {/* Stats and Insights */}
+          <StatsAndInsights trades={closedTrades} />
+
+          {/* Trade History - Only Closed Trades */}
+          <TradeHistory trades={closedTrades} onNotesUpdate={handleNotesUpdate} />
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#1F1F1F] bg-[#0A0A0A] mt-16 py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-xs text-neutral-600">
+            Deriverse Trading Analytics Dashboard • On-Chain Data • Powered by Solana
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}

@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Deriverse Premium Palette */
+    --background: 0 0% 2%; /* Deep Void Black #050505 */
+    --foreground: 0 0% 100%;
+    
+    /* Card/Surface Colors - Slightly lighter than bg */
+    --card: 0 0% 6%; 
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 100%;
+    
+    /* Primary Brand Colors */
+    --primary: 155 89% 51%; /* Solana Green #14F195 */
+    --primary-foreground: 0 0% 0%;
+    
+    --secondary: 268 100% 64%; /* Solana Purple #9945FF */
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    
+    --accent: 155 89% 51%;
+    --accent-foreground: 0 0% 5%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 155 89% 51%;
+    
+    --radius: 0.5rem;
+
+    /* Chart Colors */
+    --chart-1: 155 89% 51%; /* Green */
+    --chart-2: 0 84% 60%;   /* Red */
+    --chart-3: 268 100% 64%; /* Purple */
+    --chart-4: 45 93% 47%;  /* Gold */
+    --chart-5: 190 90% 50%; /* Cyan */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-neutral-900/50 backdrop-blur-md border border-white/5;
+  }
+  
+  .glass-card {
+    @apply bg-[#0A0A0A]/80 backdrop-blur-sm border border-white/5 shadow-xl;
+  }
+  
+  .neon-text-green {
+    text-shadow: 0 0 10px rgba(20, 241, 149, 0.5);
+  }
+  
+  .neon-text-purple {
+    text-shadow: 0 0 10px rgba(153, 69, 255, 0.5);
+  }
+  
+  .neon-border-green {
+    box-shadow: 0 0 10px rgba(20, 241, 149, 0.2);
+  }
+
+  /* Custom Scrollbar for dense layouts */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #050505; 
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #444; 
+  }
+}
