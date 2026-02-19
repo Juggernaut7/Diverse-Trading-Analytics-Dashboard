@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Sidebar } from '@/components/layout/sidebar';
 import { Providers } from '@/components/providers/wallet-provider';
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
@@ -29,14 +30,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased bg-[#050505] text-white">
-        {/* <Providers> */}
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 md:pl-64 transition-all duration-300">
-            {children}
-          </main>
-        </div>
-        {/* </Providers> */}
+        <Providers>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 md:pl-64 transition-all duration-300">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   )
