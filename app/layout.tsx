@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: 'Deriverse Trading Dashboard',
   description: 'Comprehensive on-chain trading analytics dashboard for Deriverse protocol. Track PnL, analyze performance, and gain insights from your trading data.',
   generator: 'v0.app',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
   viewport: {
     width: 'device-width',
     initialScale: 1,

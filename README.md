@@ -16,6 +16,24 @@ The Deriverse Trading Analytics Dashboard is a Next.js 16 application that integ
 - Responsive Design: Mobile-friendly interface with collapsible sidebar
 - Graceful Fallback: Demo mode when wallet is disconnected
 
+## Data Modes
+
+### Live Mode (Wallet Connected)
+- Fetches real on-chain positions from Deriverse via SDK
+- Updates every 10 seconds
+- Calculates real P&L and analytics
+- Market prices streamed from Solana RPC
+- Requires wallet connection (Phantom, Solflare, etc.)
+
+### Demo Mode (No Wallet)
+- Uses comprehensive mock historical trade data
+- Allows full UI and analytics exploration
+- Perfect for feature evaluation without wallet setup
+- All dashboard features fully functional
+- Designed for reviewers to test comprehensive analytics
+
+**Note:** Historical trade APIs are not currently exposed by the protocol, so demo data is used to simulate full journal analytics. Live positions appear automatically when wallet is connected.
+
 ## Architecture
 
 ### System Architecture
