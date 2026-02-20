@@ -93,20 +93,20 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
       <header className="border-b border-[#1F1F1F] bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-full mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+        <div className="max-w-full mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent truncate">
                 Trading Dashboard
               </h1>
               <p className="text-xs text-neutral-500 mt-1">
                 Deriverse Protocol Analytics
               </p>
             </div>
-            <div className="hidden md:block text-right">
+            <div className="hidden sm:block text-right flex-shrink-0">
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-emerald-400 neon-text-green">
+                  <div className="text-lg sm:text-2xl font-bold text-emerald-400 neon-text-green">
                     ${closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0).toFixed(2)}
                   </div>
                   <p className="text-xs text-neutral-400">Realized P&L</p>
@@ -118,30 +118,39 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-full mx-auto px-6 py-6">
+      <main className="max-w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="space-y-6">
-          {/* Top Section: Filters and Open Positions */}
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            <div className="xl:col-span-1 space-y-6">
-              <WalletConnectSection />
+          {/* Wallet Section - Full Width */}
+          <div className="w-full">
+            <WalletConnectSection />
+          </div>
+
+          {/* Data Error Alert - Full Width */}
+          {dataError && (
+            <div className="w-full bg-red-900/20 border border-red-700 text-red-200 p-3 rounded text-xs">
+              <p className="font-semibold">⚠️ Data Error</p>
+              <p>{dataError}</p>
+            </div>
+          )}
+
+          {/* Filters and Export Side by Side - Responsive */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="w-full">
               <Filters
                 symbols={MOCK_SYMBOLS}
                 onFilterChange={handleFilterChange}
                 selectedSymbol={filters.symbol}
                 selectedDateRange={filters.dateRange}
               />
-              {dataError && (
-                <div className="bg-red-900/20 border border-red-700 text-red-200 p-3 rounded text-xs">
-                  <p className="font-semibold">⚠️ Data Error</p>
-                  <p>{dataError}</p>
-                </div>
-              )}
+            </div>
+            <div className="w-full">
               <ExportImport trades={filteredTrades} />
             </div>
+          </div>
 
-            <div className="xl:col-span-3">
-              <OpenPositions trades={openTrades} />
-            </div>
+          {/* Open Positions - Full Width */}
+          <div className="w-full">
+            <OpenPositions trades={openTrades} />
           </div>
 
           {/* Key Metrics */}

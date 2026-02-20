@@ -41,16 +41,16 @@ export function Filters({ symbols, onFilterChange, selectedSymbol, selectedDateR
   };
 
   return (
-    <Card className="p-6 bg-neutral-900 border-neutral-800">
+    <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800 w-full">
       <div className="flex flex-col gap-4">
         <h3 className="text-sm font-semibold text-white">Filters</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {/* Symbol Filter */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium text-neutral-400">Trading Pair</label>
             <Select value={symbol} onValueChange={setSymbol}>
-              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white text-sm">
                 <SelectValue placeholder="All symbols" />
               </SelectTrigger>
               <SelectContent className="bg-neutral-800 border-neutral-700">
@@ -68,7 +68,7 @@ export function Filters({ symbols, onFilterChange, selectedSymbol, selectedDateR
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium text-neutral-400">Time Period</label>
             <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white text-sm">
                 <SelectValue placeholder="Select period" />
               </SelectTrigger>
               <SelectContent className="bg-neutral-800 border-neutral-700">
@@ -83,17 +83,17 @@ export function Filters({ symbols, onFilterChange, selectedSymbol, selectedDateR
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-2 sm:gap-3 pt-2 flex-col sm:flex-row">
           <Button
             onClick={handleApply}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-9"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-9 text-sm"
           >
             Apply Filters
           </Button>
           <Button
             onClick={handleReset}
             variant="outline"
-            className="flex-1 border-neutral-700 text-neutral-300 hover:bg-neutral-800 h-9"
+            className="flex-1 border-neutral-700 text-neutral-300 hover:bg-neutral-800 h-9 text-sm"
           >
             Reset
           </Button>

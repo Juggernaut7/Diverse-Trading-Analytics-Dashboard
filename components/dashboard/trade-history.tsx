@@ -95,72 +95,64 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
   };
 
   return (
-    <Card className="p-6 bg-[#0A0A0A] border-[#1F1F1F]">
+    <Card className="p-4 sm:p-6 bg-[#0A0A0A] border-[#1F1F1F]">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-white">Trade History & Journal</h3>
-          <span className="text-xs text-neutral-400">Total: {trades.length} trades</span>
+          <span className="text-xs text-neutral-400 flex-shrink-0">Total: {trades.length}</span>
         </div>
 
         {trades.length > 0 ? (
           <>
-            {/* Responsive table wrapper */}
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-[#1F1F1F] hover:bg-transparent">
                     <TableHead
-                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors"
+                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors text-xs"
                       onClick={() => handleSort('date')}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         Entry Date <SortIndicator field="date" />
                       </div>
                     </TableHead>
                     <TableHead
-                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors"
+                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors text-xs"
                       onClick={() => handleSort('symbol')}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         Symbol <SortIndicator field="symbol" />
                       </div>
                     </TableHead>
                     <TableHead
-                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors"
+                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors text-xs"
                       onClick={() => handleSort('type')}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         Type <SortIndicator field="type" />
                       </div>
                     </TableHead>
-                    <TableHead className="text-neutral-400">Entry / Exit</TableHead>
-                    {/* <TableHead
-                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors"
-                      onClick={() => handleSort('duration')}
-                    >
-                      <div className="flex items-center gap-2">
-                        Duration <SortIndicator field="duration" />
-                      </div>
-                    </TableHead> */}
+                    <TableHead className="text-neutral-400 text-xs">Entry / Exit</TableHead>
                     <TableHead
-                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors text-right"
+                      className="cursor-pointer text-neutral-400 hover:text-white transition-colors text-right text-xs"
                       onClick={() => handleSort('pnl')}
                     >
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
                         PnL <SortIndicator field="pnl" />
                       </div>
                     </TableHead>
-                    <TableHead className="text-neutral-400">Tags</TableHead>
-                    <TableHead className="text-neutral-400">Notes</TableHead>
+                    <TableHead className="text-neutral-400 text-xs">Tags</TableHead>
+                    <TableHead className="text-neutral-400 text-xs">Notes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedTrades.map((trade) => (
                     <TableRow
                       key={trade.id}
-                      className="border-[#1F1F1F] hover:bg-neutral-900/50 transition-colors"
+                      className="border-[#1F1F1F] hover:bg-neutral-900/50 transition-colors text-xs"
                     >
-                      <TableCell className="text-sm text-neutral-300">
+                      <TableCell className="text-xs text-neutral-300">
                         {new Date(trade.entryTime).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -168,10 +160,10 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
                           minute: '2-digit',
                         })}
                       </TableCell>
-                      <TableCell className="text-sm font-semibold text-white">{trade.symbol}</TableCell>
+                      <TableCell className="text-xs font-semibold text-white">{trade.symbol}</TableCell>
                       <TableCell>
                         <span
-                          className={`text-xs font-medium px-2 py-1 rounded ${trade.type === 'long'
+                          className={`text-xs font-medium px-2 py-0.5 rounded inline-block ${trade.type === 'long'
                             ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                             : 'bg-red-500/10 text-red-400 border border-red-500/20'
                             }`}
@@ -179,14 +171,13 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
                           {trade.type.toUpperCase()}
                         </span>
                       </TableCell>
-                      <TableCell className="text-sm text-neutral-300">
+                      <TableCell className="text-xs text-neutral-300">
                         <div className="text-neutral-400">{trade.entryPrice.toFixed(2)}</div>
                         <div className="text-neutral-500 text-xs">{trade.exitPrice?.toFixed(2)}</div>
                       </TableCell>
-                      {/* <TableCell className="text-sm text-neutral-300">{trade.durationMinutes}m</TableCell> */}
                       <TableCell className="text-right">
                         <div
-                          className={`text-sm font-semibold ${(trade.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
+                          className={`text-xs font-semibold ${(trade.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
                             }`}
                         >
                           ${trade.pnl?.toFixed(2)}

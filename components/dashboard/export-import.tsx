@@ -41,7 +41,7 @@ export function ExportImport({ trades }: ExportImportProps) {
   };
 
   return (
-    <Card className="p-6 bg-neutral-900 border-neutral-800">
+    <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800 w-full">
       <div className="flex flex-col gap-4">
         <h3 className="text-sm font-semibold text-white">Export Data</h3>
         
@@ -49,18 +49,18 @@ export function ExportImport({ trades }: ExportImportProps) {
           Download your trade history for external analysis or record-keeping.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           <Button
             onClick={handleExportCSV}
             disabled={trades.length === 0}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium h-10"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium h-10 text-sm"
           >
             Export as CSV
           </Button>
           <Button
             onClick={handleExportJSON}
             disabled={trades.length === 0}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium h-10"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium h-10 text-sm"
           >
             Export as JSON
           </Button>

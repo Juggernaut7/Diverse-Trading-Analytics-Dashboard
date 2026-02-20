@@ -62,17 +62,17 @@ export function Charts({ trades }: ChartsProps) {
   }));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
       {/* Historical PnL with Drawdown */}
-      <Card className="p-6 bg-neutral-900 border-neutral-800 lg:col-span-2">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+      <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800 lg:col-span-2">
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <h3 className="text-sm font-semibold text-white">Historical PnL & Drawdown</h3>
             <span className="text-xs text-red-400">Max Drawdown: ${maxDrawdown.toFixed(2)}</span>
           </div>
 
           {dailyMetrics.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={drawdownData}>
                 <defs>
                   <linearGradient id="colorPnl" x1="0" y1="0" x2="0" y2="1">
@@ -85,8 +85,8 @@ export function Charts({ trades }: ChartsProps) {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
-                <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+                <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#1a1b1e',
@@ -94,6 +94,7 @@ export function Charts({ trades }: ChartsProps) {
                     borderRadius: '6px',
                   }}
                   labelStyle={{ color: '#fff' }}
+                  contentStyle={{ fontSize: '12px' }}
                 />
                 <Area
                   type="monotone"
@@ -116,24 +117,24 @@ export function Charts({ trades }: ChartsProps) {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-72 flex items-center justify-center text-neutral-500">No data available</div>
+            <div className="h-60 flex items-center justify-center text-neutral-500 text-sm">No data available</div>
           )}
         </div>
       </Card>
 
       {/* Long vs Short Ratio */}
-      <Card className="p-6 bg-neutral-900 border-neutral-800">
-        <div className="flex flex-col gap-4">
+      <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <h3 className="text-sm font-semibold text-white">Long vs Short Ratio</h3>
           {ratioData.some((item) => item.value > 0) ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={ratioData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={40}
+                  outerRadius={70}
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -146,44 +147,46 @@ export function Charts({ trades }: ChartsProps) {
                     backgroundColor: '#1a1b1e',
                     border: '1px solid #404040',
                     borderRadius: '6px',
+                    fontSize: '12px',
                   }}
                   labelStyle={{ color: '#fff' }}
                 />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-56 flex items-center justify-center text-neutral-500">No data available</div>
+            <div className="h-52 flex items-center justify-center text-neutral-500 text-sm">No data available</div>
           )}
           <div className="grid grid-cols-2 gap-2 pt-2">
-            <div className="bg-neutral-800 p-3 rounded-lg">
-              <div className="text-xs text-neutral-400">Long Trades</div>
-              <div className="text-lg font-bold text-white">{ratios.longCount}</div>
-              <div className="text-xs text-emerald-400">{ratios.longWinRate}% Win</div>
+            <div className="bg-neutral-800 p-2 sm:p-3 rounded-lg">
+              <div className="text-xs text-neutral-400">Long</div>
+              <div className="text-base sm:text-lg font-bold text-white">{ratios.longCount}</div>
+              <div className="text-xs text-emerald-400">{ratios.longWinRate}%</div>
             </div>
-            <div className="bg-neutral-800 p-3 rounded-lg">
-              <div className="text-xs text-neutral-400">Short Trades</div>
-              <div className="text-lg font-bold text-white">{ratios.shortCount}</div>
-              <div className="text-xs text-red-400">{ratios.shortWinRate}% Win</div>
+            <div className="bg-neutral-800 p-2 sm:p-3 rounded-lg">
+              <div className="text-xs text-neutral-400">Short</div>
+              <div className="text-base sm:text-lg font-bold text-white">{ratios.shortCount}</div>
+              <div className="text-xs text-red-400">{ratios.shortWinRate}%</div>
             </div>
           </div>
         </div>
       </Card>
 
       {/* Time of Day Performance */}
-      <Card className="p-6 bg-neutral-900 border-neutral-800">
-        <div className="flex flex-col gap-4">
+      <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <h3 className="text-sm font-semibold text-white">Time of Day Performance</h3>
           {timeOfDay.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={timeOfDay}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
-                <XAxis dataKey="hour" stroke="#6b7280" style={{ fontSize: '12px' }} />
-                <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+                <XAxis dataKey="hour" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#1a1b1e',
                     border: '1px solid #404040',
                     borderRadius: '6px',
+                    fontSize: '12px',
                   }}
                   labelStyle={{ color: '#fff' }}
                 />
@@ -191,7 +194,7 @@ export function Charts({ trades }: ChartsProps) {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-56 flex items-center justify-center text-neutral-500">No data available</div>
+            <div className="h-52 flex items-center justify-center text-neutral-500 text-sm">No data available</div>
           )}
         </div>
       </Card>
