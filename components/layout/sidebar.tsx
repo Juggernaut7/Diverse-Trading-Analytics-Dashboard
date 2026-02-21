@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/ui/logo';
@@ -36,6 +36,8 @@ export function Sidebar() {
     ];
 
     const { publicKey, connected } = useWallet();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
     return (
         <>
             {/* Mobile Menu Button */}
@@ -106,9 +108,11 @@ export function Sidebar() {
 
                     {/* Wallet Status */}
                     {/* Wallet Status */}
-                    <div className={cn('flex justify-center', collapsed ? 'p-2' : 'px-3')}>
-                        <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-xl !h-10 !text-sm !font-semibold !px-4 w-full justify-center" />
-                    </div>
+                                        <div className={cn('flex justify-center', collapsed ? 'p-2' : 'px-3')}>
+                                                {mounted && (
+                                                    <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-xl !h-10 !text-sm !font-semibold !px-4 w-full justify-center" />
+                                                )}
+                                        </div>
                 </div>
             </aside>
 
