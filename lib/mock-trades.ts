@@ -1,6 +1,7 @@
 import { Trade } from './types';
 
-const now = Date.now();
+// Use a fixed timestamp for deterministic mock data (prevents SSR/client hydration mismatch)
+const now = 1700000000000; // e.g., Sat Nov 14 2023 06:13:20 GMT+0000
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = 60 * 60 * 1000;
 const oneMinute = 60 * 1000;

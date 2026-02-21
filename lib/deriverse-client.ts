@@ -1,10 +1,22 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+
+import { Connection } from '@solana/web3.js';
 import { Engine } from '@deriverse/kit';
 import { createSolanaRpc } from '@solana/rpc';
 
-// Addresses for Deriverse
-const PROGRAM_ID = new PublicKey('CDESjex4EDBKLwx9ZPzVbjiHEHatasb5fhSJZMzNfvw2');
+
+// Deriverse configuration
+const DEFAULT_PROGRAM_ID = '11111111111111111111111111111111';
 const VERSION = 6;
+
+// Resolve program ID as a plain base58 string (the Engine SDK validates via Zod)
+const PROGRAM_ID: string = (() => {
+    const envId = process.env.NEXT_PUBLIC_DERIVERSE_PROGRAM_ID;
+    if (envId && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(envId)) {
+        return envId;
+    }
+    console.warn('[Deriverse] Invalid or missing NEXT_PUBLIC_DERIVERSE_PROGRAM_ID, using System Program as fallback.');
+    return DEFAULT_PROGRAM_ID;
+})();
 
 let engineInstance: Engine | null = null;
 
@@ -18,9 +30,8 @@ export const getDeriverseEngine = (connection: Connection) => {
     // Initialize the Engine
     // @ts-ignore - Ignoring strict type check on RPC for now as we transition between web3.js versions
     engineInstance = new Engine(rpc, {
-        programId: PROGRAM_ID as any, // Cast to compatible Address type if needed
+        programId: PROGRAM_ID as any,
         version: VERSION,
-        // Add other config if needed
     });
 
     return engineInstance;

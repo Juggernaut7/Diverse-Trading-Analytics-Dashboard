@@ -26,6 +26,7 @@ import {
 import { MOCK_TRADES, MOCK_SYMBOLS } from '@/lib/mock-trades';
 import { Trade } from '@/lib/types';
 import { useDeriverseData } from '@/hooks/useDeriverseData';
+import { mergeTrades } from '@/lib/deriverse-adapters';
 
 import { AssistantWidget } from '@/components/assistant-widget';
 
@@ -39,7 +40,7 @@ export default function Dashboard() {
   // 1. Use SDK data when connected, fallback to mock for closed trades (until we have an indexer)
   // 2. Always prefer real open positions from SDK when available
   // 3. For closed trades, merge SDK data with mock data (SDK data takes precedence)
-  
+
   useEffect(() => {
     // Merge mock trades with SDK trades
     // SDK trades take precedence over mock trades with same ID
@@ -83,7 +84,7 @@ export default function Dashboard() {
       ...prev,
       [tradeId]: notes,
     }));
-    
+
     // Also update in trades array for persistence
     setTrades((prevTrades) =>
       prevTrades.map((trade) => (trade.id === tradeId ? { ...trade, notes } : trade))
@@ -92,10 +93,10 @@ export default function Dashboard() {
 
   // Separate open and closed trades for different sections
   // Use SDK active positions when connected, fallback to mock
-  const openTrades = isConnected && activePositions.length > 0 
-    ? activePositions 
+  const openTrades = isConnected && activePositions.length > 0
+    ? activePositions
     : filteredTrades.filter(t => t.status === 'open');
-  
+
   const closedTrades = filteredTrades.filter(t => t.status !== 'open');
 
   // Add notes from notesMap to trades
@@ -192,12 +193,16 @@ export default function Dashboard() {
             </div>
             <div className="space-y-6">
               <TimeOfDayHeatmap data={calculateTimeOfDayMetrics(tradesWithNotes)} />
-              <AdvancedStats
-                sharpeRatio={calculateSharpeRatio(tradesWithNotes)}
-                profitFactor={calculateProfitFactor(tradesWithNotes)}
-                maxDrawdown={calculateMaxDrawdown(tradesWithNotes)}
-              />
             </div>
+          </div>
+
+          {/* Advanced Stats - Always below heatmap, never overlapping */}
+          <div className="mt-6">
+            <AdvancedStats
+              sharpeRatio={calculateSharpeRatio(tradesWithNotes)}
+              profitFactor={calculateProfitFactor(tradesWithNotes)}
+              maxDrawdown={calculateMaxDrawdown(tradesWithNotes)}
+            />
           </div>
 
           {/* Charts Section */}
