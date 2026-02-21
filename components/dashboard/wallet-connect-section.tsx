@@ -1,12 +1,15 @@
 'use client';
 
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Card } from '@/components/ui/card';
 import { Wallet, Zap } from 'lucide-react';
 
 export function WalletConnectSection() {
   const { publicKey, connected } = useWallet();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <Card className="p-4 sm:p-6 bg-neutral-900 border-neutral-800 w-full">
@@ -16,7 +19,9 @@ export function WalletConnectSection() {
             {/* Connected State */}
             {/* Trust/connection status now in nav/sidebar, not here */}
             <div className="flex gap-2">
-              <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !h-9 !text-xs !font-medium flex-1" />
+              {mounted && (
+                <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !h-9 !text-xs !font-medium flex-1" />
+              )}
             </div>
           </>
         ) : (
@@ -35,7 +40,9 @@ export function WalletConnectSection() {
                 Open positions and market prices update every 10 seconds when connected.
               </p>
             </div>
-            <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !h-10 !text-sm !font-semibold w-full !justify-center mt-2" />
+            {mounted && (
+              <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !h-10 !text-sm !font-semibold w-full !justify-center mt-2" />
+            )}
           </>
         )}
       </div>
