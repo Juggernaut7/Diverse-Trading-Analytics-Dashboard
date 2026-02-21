@@ -9,10 +9,25 @@ import { StatsAndInsights } from '@/components/dashboard/stats-and-insights';
 import { ExportImport } from '@/components/dashboard/export-import';
 import { OpenPositions } from '@/components/dashboard/open-positions';
 import { WalletConnectSection } from '@/components/dashboard/wallet-connect-section';
+import { SessionPerformanceChart } from '@/components/dashboard/session-performance-chart';
+import { TimeOfDayHeatmap } from '@/components/dashboard/time-of-day-heatmap';
+import { OrderTypePerformanceChart } from '@/components/dashboard/order-type-performance-chart';
+import { CumulativeFeeChart } from '@/components/dashboard/cumulative-fee-chart';
+import { AdvancedStats } from '@/components/dashboard/advanced-stats';
+import {
+  calculateSessionPerformance,
+  calculateTimeOfDayMetrics,
+  calculateOrderTypePerformance,
+  calculateCumulativeFees,
+  calculateSharpeRatio,
+  calculateProfitFactor,
+  calculateMaxDrawdown
+} from '@/lib/analytics';
 import { MOCK_TRADES, MOCK_SYMBOLS } from '@/lib/mock-trades';
 import { Trade } from '@/lib/types';
 import { useDeriverseData } from '@/hooks/useDeriverseData';
-import { mergeTrades } from '@/lib/deriverse-adapters';
+
+import { AssistantWidget } from '@/components/assistant-widget';
 
 export default function Dashboard() {
   const { activePositions, closedTrades: sdkClosedTrades, marketPrices, isConnected, isLoadingData, dataError } = useDeriverseData();
@@ -89,6 +104,17 @@ export default function Dashboard() {
     notes: notesMap[trade.id] || trade.notes || '',
   }));
 
+  // Handle journal modal save (annotation, strategy, sentiment)
+  const handleJournalUpdate = (entry) => {
+    setTrades((prevTrades) => prevTrades.map((trade) =>
+      trade.id === entry.id ? { ...trade, ...entry } : trade
+    ));
+    // If notes changed, update notesMap for consistency
+    if (entry.notes) {
+      setNotesMap((prev) => ({ ...prev, [entry.id]: entry.notes }));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
@@ -153,8 +179,26 @@ export default function Dashboard() {
             <OpenPositions trades={openTrades} />
           </div>
 
+
           {/* Key Metrics */}
           <SummaryMetrics trades={tradesWithNotes} />
+
+          {/* Advanced Analytics Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <SessionPerformanceChart data={calculateSessionPerformance(tradesWithNotes)} />
+              <OrderTypePerformanceChart data={calculateOrderTypePerformance(tradesWithNotes)} />
+              <CumulativeFeeChart data={calculateCumulativeFees(tradesWithNotes)} />
+            </div>
+            <div className="space-y-6">
+              <TimeOfDayHeatmap data={calculateTimeOfDayMetrics(tradesWithNotes)} />
+              <AdvancedStats
+                sharpeRatio={calculateSharpeRatio(tradesWithNotes)}
+                profitFactor={calculateProfitFactor(tradesWithNotes)}
+                maxDrawdown={calculateMaxDrawdown(tradesWithNotes)}
+              />
+            </div>
+          </div>
 
           {/* Charts Section */}
           <Charts trades={tradesWithNotes} />
@@ -163,7 +207,11 @@ export default function Dashboard() {
           <StatsAndInsights trades={tradesWithNotes} />
 
           {/* Trade History - Only Closed Trades */}
-          <TradeHistory trades={tradesWithNotes} onNotesUpdate={handleNotesUpdate} />
+          <TradeHistory
+            trades={tradesWithNotes}
+            onNotesUpdate={handleNotesUpdate}
+            onJournalUpdate={handleJournalUpdate}
+          />
         </div>
       </main>
 
@@ -175,6 +223,7 @@ export default function Dashboard() {
           </p>
         </div>
       </footer>
+      <AssistantWidget />
     </div>
   );
 }

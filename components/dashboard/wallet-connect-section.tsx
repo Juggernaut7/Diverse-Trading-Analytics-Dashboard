@@ -14,19 +14,7 @@ export function WalletConnectSection() {
         {connected ? (
           <>
             {/* Connected State */}
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-              <span className="text-sm font-semibold text-emerald-400 truncate">Live Data Connected</span>
-            </div>
-            <div className="text-xs text-neutral-400 flex items-center gap-2">
-              <Zap className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">Using on-chain data from Deriverse</span>
-            </div>
-            <div className="mt-2 p-3 bg-emerald-500/10 border border-emerald-700/30 rounded text-xs text-emerald-300 overflow-x-auto">
-              <p className="font-mono break-all text-xs">
-                {publicKey?.toString()}
-              </p>
-            </div>
+            {/* Trust/connection status now in nav/sidebar, not here */}
             <div className="flex gap-2">
               <WalletMultiButton className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !h-9 !text-xs !font-medium flex-1" />
             </div>

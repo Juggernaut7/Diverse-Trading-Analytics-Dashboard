@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { Trade } from '@/lib/types';
+import { TradeJournalEntry } from './trade-journal-modal';
+import { TradeJournalModal } from './trade-journal-modal-ui';
+import { Pencil } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge'; // Ensure this exists or use inline styles
@@ -17,12 +20,14 @@ import {
 interface TradeHistoryProps {
   trades: Trade[];
   onNotesUpdate?: (tradeId: string, notes: string) => void;
+  onJournalUpdate?: (trade: TradeJournalEntry) => void;
 }
 
 type SortField = 'date' | 'symbol' | 'type' | 'pnl' | 'duration';
 type SortDirection = 'asc' | 'desc';
 
-export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
+export function TradeHistory({ trades, onNotesUpdate, onJournalUpdate }: TradeHistoryProps) {
+    const [journalModalTrade, setJournalModalTrade] = useState<TradeJournalEntry | null>(null);
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -144,6 +149,7 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
                     </TableHead>
                     <TableHead className="text-neutral-400 text-xs">Tags</TableHead>
                     <TableHead className="text-neutral-400 text-xs">Notes</TableHead>
+                    <TableHead className="text-neutral-400 text-xs">Journal</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -232,6 +238,17 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
                           </div>
                         )}
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-neutral-400 hover:text-emerald-400"
+                          onClick={() => setJournalModalTrade(trade as TradeJournalEntry)}
+                          title="Open Journal Modal"
+                        >
+                          <Pencil size={16} />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -271,6 +288,16 @@ export function TradeHistory({ trades, onNotesUpdate }: TradeHistoryProps) {
           <div className="h-40 flex items-center justify-center text-neutral-500">No trades found</div>
         )}
       </div>
+      {journalModalTrade && (
+        <TradeJournalModal
+          trade={journalModalTrade}
+          onClose={() => setJournalModalTrade(null)}
+          onSave={entry => {
+            setJournalModalTrade(null);
+            onJournalUpdate?.(entry);
+          }}
+        />
+      )}
     </Card>
   );
 }

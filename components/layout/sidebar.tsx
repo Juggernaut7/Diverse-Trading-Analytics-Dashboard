@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { ShieldCheck } from 'lucide-react';
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
@@ -33,6 +35,7 @@ export function Sidebar() {
         { name: 'Settings', icon: Settings, href: '/settings' }, // Future route
     ];
 
+    const { publicKey, connected } = useWallet();
     return (
         <>
             {/* Mobile Menu Button */}
@@ -50,8 +53,8 @@ export function Sidebar() {
                     mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 )}
             >
-                {/* Logo Section */}
-                <div className="h-16 flex items-center px-4 border-b border-[#1F1F1F]">
+                {/* Logo & Trust Section */}
+                <div className="h-16 flex items-center px-4 border-b border-[#1F1F1F] justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
                         <Logo className="h-10 w-10" />
                         {!collapsed && (
@@ -60,6 +63,12 @@ export function Sidebar() {
                             </span>
                         )}
                     </Link>
+                    {connected && publicKey && (
+                        <div className="flex items-center gap-1 bg-emerald-900/30 border border-emerald-700/30 rounded px-2 py-1 ml-2">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                            <span className="text-xs text-emerald-300 font-mono">{publicKey.toString().slice(0,4)}..{publicKey.toString().slice(-4)}</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Navigation */}

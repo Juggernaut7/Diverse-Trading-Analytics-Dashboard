@@ -1,3 +1,72 @@
+/**
+ * Calculate session performance (Asian, European, US)
+ */
+export const calculateSessionPerformance = (trades: Trade[]) => {
+  const sessions = [
+    { name: 'Asian', start: 0, end: 8 },
+    { name: 'European', start: 8, end: 16 },
+    { name: 'US', start: 16, end: 24 },
+  ];
+  return sessions.map((session) => {
+    const sessionTrades = trades.filter((t) => {
+      const hour = new Date(t.entryTime).getUTCHours();
+      return hour >= session.start && hour < session.end;
+    });
+    const pnl = sessionTrades.reduce((sum, t) => sum + t.pnl, 0);
+    const winRate = sessionTrades.length > 0 ? Math.round((sessionTrades.filter((t) => t.pnl > 0).length / sessionTrades.length) * 100) : 0;
+    return {
+      session: session.name,
+      trades: sessionTrades.length,
+      pnl: Math.round(pnl * 100) / 100,
+      winRate,
+    };
+  });
+};
+
+/**
+ * Calculate Sharpe ratio (annualized, using daily PnL)
+ */
+export const calculateSharpeRatio = (trades: Trade[]): number => {
+  if (trades.length < 2) return 0;
+  // Group by day
+  const dailyPnls = new Map<string, number>();
+  trades.forEach((t) => {
+    const day = new Date(t.exitTime || t.entryTime).toISOString().slice(0, 10);
+    dailyPnls.set(day, (dailyPnls.get(day) || 0) + t.pnl);
+  });
+  const returns = Array.from(dailyPnls.values());
+  if (returns.length < 2) return 0;
+  const mean = returns.reduce((s, r) => s + r, 0) / returns.length;
+  const stddev = Math.sqrt(returns.reduce((s, r) => s + Math.pow(r - mean, 2), 0) / (returns.length - 1));
+  if (stddev === 0) return 0;
+  return Math.round((mean / stddev * Math.sqrt(252)) * 100) / 100;
+};
+
+/**
+ * Calculate profit factor (gross profit / gross loss)
+ */
+export const calculateProfitFactor = (trades: Trade[]): number => {
+  const grossProfit = trades.filter((t) => t.pnl > 0).reduce((s, t) => s + t.pnl, 0);
+  const grossLoss = Math.abs(trades.filter((t) => t.pnl < 0).reduce((s, t) => s + t.pnl, 0));
+  if (grossLoss === 0) return grossProfit > 0 ? Infinity : 0;
+  return Math.round((grossProfit / grossLoss) * 100) / 100;
+};
+
+/**
+ * Calculate cumulative fees over time (for area chart)
+ */
+export const calculateCumulativeFees = (trades: Trade[]): Array<{ date: string; cumulativeFees: number }> => {
+  // Sort trades by entry time
+  const sorted = [...trades].sort((a, b) => a.entryTime - b.entryTime);
+  let cumulative = 0;
+  return sorted.map((t) => {
+    cumulative += t.fee;
+    return {
+      date: new Date(t.entryTime).toISOString().slice(0, 10),
+      cumulativeFees: Math.round(cumulative * 100) / 100,
+    };
+  });
+};
 import { Trade, DailyMetrics, TimeOfDayMetrics, BiasInsight } from './types';
 
 /**

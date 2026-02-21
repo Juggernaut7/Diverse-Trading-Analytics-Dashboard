@@ -6,14 +6,16 @@ A comprehensive on-chain trading analytics platform built for the Deriverse Prot
 
 The Deriverse Trading Analytics Dashboard is a Next.js 16 application that integrates with the Deriverse SDK to deliver live market data and position information. The platform supports both live trading data (when wallet is connected) and demo mode with mock data for UI evaluation.
 
+
 ### Key Features
 
 - Real-Time Position Tracking: Live updates from Deriverse perpetual positions
 - Market Prices: Real-time instrument prices updated every 10 seconds
-- Comprehensive Analytics: P&L tracking, win rates, trade duration, fee analysis
-- Trading Journal: Notes and tags for each trade
+- Comprehensive Analytics: Sharpe ratio, profit factor, drawdown, win rate, cumulative fees, and more
+- Trading Journal: Modal for annotation, strategy tagging, and sentiment tracking per trade
 - Export Functionality: Download trade history as CSV or JSON
-- Responsive Design: Mobile-friendly interface with collapsible sidebar
+- Responsive Design: Mobile-optimized, professional UI/UX
+- AI Assistant: Integrated chat for analytics, journaling, and trading insights
 - Graceful Fallback: Demo mode when wallet is disconnected
 
 ## Data Modes
@@ -695,24 +697,19 @@ export function convertPerpPositionToTrade(
 }
 ```
 
+
 ## Features Implemented
 
 ### Core Dashboard Features
 
-- Total PnL tracking with visual indicators
-- Win rate statistics and trade count metrics
-- Average trade duration calculations
-- Long/Short ratio analysis with directional bias tracking
-- Largest gain/loss tracking for risk management
-- Average win/loss amount analysis
-- Symbol-specific filtering and date range selection
-- Historical PnL charts with drawdown visualization
-- Time-based performance metrics
-- Detailed trade history table with annotation capabilities
-- Fee composition breakdown and cumulative fee tracking
-- Order type performance analysis
-- Daily PnL visualization
-- Risk metrics dashboard
+- Persistent green/red palette for all analytics
+- Advanced analytics: Sharpe ratio, profit factor, drawdown, win rate, cumulative fees
+- Trade journal modal with annotation, strategy, sentiment
+- Portfolio/session performance, time-of-day heatmap, order type analytics, cumulative fee chart
+- Wallet connect, demo mode, and on-chain data integration
+- Export/import trade data (CSV/JSON)
+- Mobile-optimized, responsive UI/UX
+- Integrated AI assistant for analytics, journaling, and trading insights
 
 ### Live Data Integration
 
@@ -787,11 +784,22 @@ When contributing to this project:
 4. Test before committing
 5. Update relevant documentation
 
-## Documentation
+
+## Documentation & Submission
 
 - [LIVE_DATA_INTEGRATION.md](./LIVE_DATA_INTEGRATION.md) - Detailed integration guide
 - [QUICKSTART.md](./QUICKSTART.md) - Quick start instructions
 - [lib/examples.tsx](./lib/examples.tsx) - Code usage examples
+
+### Final Checklist
+- [x] Persistent green/red palette for all analytics
+- [x] Trade journal modal with annotation, strategy, sentiment
+- [x] Mobile and desktop UI/UX polish
+- [x] AI assistant widget (bottom right)
+- [x] Codebase cleaned, dead code removed
+- [x] Documentation updated
+
+**Ready for hackathon submission.**
 
 ## Changelog
 
