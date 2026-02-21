@@ -11,13 +11,11 @@ import { OpenPositions } from '@/components/dashboard/open-positions';
 import { WalletConnectSection } from '@/components/dashboard/wallet-connect-section';
 import { SessionPerformanceChart } from '@/components/dashboard/session-performance-chart';
 import { TimeOfDayHeatmap } from '@/components/dashboard/time-of-day-heatmap';
-import { OrderTypePerformanceChart } from '@/components/dashboard/order-type-performance-chart';
 import { CumulativeFeeChart } from '@/components/dashboard/cumulative-fee-chart';
 import { AdvancedStats } from '@/components/dashboard/advanced-stats';
 import {
   calculateSessionPerformance,
   calculateTimeOfDayMetrics,
-  calculateOrderTypePerformance,
   calculateCumulativeFees,
   calculateSharpeRatio,
   calculateProfitFactor,
@@ -100,10 +98,19 @@ export default function Dashboard() {
   const closedTrades = filteredTrades.filter(t => t.status !== 'open');
 
   // Add notes from notesMap to trades
-  const tradesWithNotes = closedTrades.map(trade => ({
-    ...trade,
-    notes: notesMap[trade.id] || trade.notes || '',
-  }));
+  const tradesWithNotes = useMemo(
+    () =>
+      closedTrades.map((trade) => ({
+        ...trade,
+        notes: notesMap[trade.id] || trade.notes || '',
+      })),
+    [closedTrades, notesMap]
+  );
+
+  const cumulativeFeeData = useMemo(
+    () => calculateCumulativeFees(tradesWithNotes),
+    [tradesWithNotes]
+  );
 
   // Handle journal modal save (annotation, strategy, sentiment)
   const handleJournalUpdate = (entry) => {
@@ -152,8 +159,8 @@ export default function Dashboard() {
             <WalletConnectSection />
           </div>
 
-          {/* Data Error Alert - Full Width */}
-          {dataError && (
+          {/* Data Error Alert - only show for unexpected errors, not RPC/config fallback */}
+          {dataError && !dataError.toLowerCase().includes('cached') && !dataError.toLowerCase().includes('mock data') && (
             <div className="w-full bg-red-900/20 border border-red-700 text-red-200 p-3 rounded text-xs">
               <p className="font-semibold">⚠️ Data Error</p>
               <p>{dataError}</p>
@@ -186,23 +193,40 @@ export default function Dashboard() {
 
           {/* Advanced Analytics Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <SessionPerformanceChart data={calculateSessionPerformance(tradesWithNotes)} />
-              <OrderTypePerformanceChart data={calculateOrderTypePerformance(tradesWithNotes)} />
-              <CumulativeFeeChart data={calculateCumulativeFees(tradesWithNotes)} />
+            <div className="space-y-8 flex flex-col">
+              {/* Regional Performance - contained card so it never overlaps the section below */}
+              <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl p-6 shadow-2xl shrink-0">
+                <h3 className="text-sm font-semibold text-neutral-300 mb-4 flex items-center gap-2">
+                  <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
+                  Regional Performance (Asian / European / US)
+                </h3>
+                <SessionPerformanceChart data={calculateSessionPerformance(tradesWithNotes)} />
+              </div>
+
+              {/* Cumulative Fees - clear separation above */}
+              <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl p-6 shadow-2xl min-h-[450px] shrink-0 mt-0">
+                <h3 className="text-sm font-semibold text-neutral-300 mb-6 flex items-center gap-2">
+                  <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></span>
+                  Cumulative Fees & Analysis
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  <div className="lg:col-span-3 min-w-0">
+                    <CumulativeFeeChart data={cumulativeFeeData} />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <AdvancedStats
+                      sharpeRatio={calculateSharpeRatio(tradesWithNotes)}
+                      profitFactor={calculateProfitFactor(tradesWithNotes)}
+                      maxDrawdown={calculateMaxDrawdown(tradesWithNotes)}
+                      layout="vertical"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="space-y-6">
               <TimeOfDayHeatmap data={calculateTimeOfDayMetrics(tradesWithNotes)} />
             </div>
-          </div>
-
-          {/* Advanced Stats - Always below heatmap, never overlapping */}
-          <div className="mt-6">
-            <AdvancedStats
-              sharpeRatio={calculateSharpeRatio(tradesWithNotes)}
-              profitFactor={calculateProfitFactor(tradesWithNotes)}
-              maxDrawdown={calculateMaxDrawdown(tradesWithNotes)}
-            />
           </div>
 
           {/* Charts Section */}

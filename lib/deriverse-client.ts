@@ -1,34 +1,38 @@
-
 import { Connection } from '@solana/web3.js';
 import { Engine } from '@deriverse/kit';
 import { createSolanaRpc } from '@solana/rpc';
 
-
 // Deriverse configuration
-const DEFAULT_PROGRAM_ID = '11111111111111111111111111111111';
+export const DEFAULT_PROGRAM_ID = 'CDESjex4EDBKLwx9ZPzVbjiHEHatasb5fhSJZMzNfvw2';
 const VERSION = 6;
 
-// Resolve program ID as a plain base58 string (the Engine SDK validates via Zod)
-const PROGRAM_ID: string = (() => {
-    const envId = process.env.NEXT_PUBLIC_DERIVERSE_PROGRAM_ID;
-    if (envId && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(envId)) {
-        return envId;
-    }
-    console.warn('[Deriverse] Invalid or missing NEXT_PUBLIC_DERIVERSE_PROGRAM_ID, using System Program as fallback.');
-    return DEFAULT_PROGRAM_ID;
-})();
+// Resolve program ID - Hardcoded as primary source of truth for Devnet
+const PROGRAM_ID: string = DEFAULT_PROGRAM_ID;
+
+// Fallback RPC URL so we never pass null/undefined to createSolanaRpc (fixes "invalid type: null, expected a string")
+const DEFAULT_RPC_URL = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SOLANA_RPC
+    ? process.env.NEXT_PUBLIC_SOLANA_RPC
+    : 'https://api.devnet.solana.com';
 
 let engineInstance: Engine | null = null;
+
+function getRpcEndpoint(connection: Connection): string {
+    const fromConnection = (connection as { rpcEndpoint?: string }).rpcEndpoint;
+    if (typeof fromConnection === 'string' && fromConnection.length > 0) return fromConnection;
+    return DEFAULT_RPC_URL;
+}
 
 export const getDeriverseEngine = (connection: Connection) => {
     if (engineInstance) return engineInstance;
 
-    // Use the connection endpoint to create the RPC client expected by Deriverse SDK
-    // The SDK uses the new @solana/rpc interface
-    const rpc = createSolanaRpc('https://api.devnet.solana.com');
+    const endpoint = getRpcEndpoint(connection);
+    console.log('[Deriverse] Initializing Engine with Program ID:', PROGRAM_ID, 'endpoint:', endpoint);
+
+    // Ensure we never pass null/undefined (Solana JSON-RPC requires string)
+    const rpc = createSolanaRpc(endpoint);
 
     // Initialize the Engine
-    // @ts-ignore - Ignoring strict type check on RPC for now as we transition between web3.js versions
+    // @ts-ignore - The SDK types might lag behind the @solana/rpc version
     engineInstance = new Engine(rpc, {
         programId: PROGRAM_ID as any,
         version: VERSION,
